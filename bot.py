@@ -1,23 +1,30 @@
 import os
+import logging
 from telegram import Update
-from telegram.ext import Updater, CommandHandler, CallbackContext
+from telegram.ext import Application, CommandHandler, ContextTypes
 
-def start(update: Update, context: CallbackContext):
-    update.message.reply_text('صلي على محمد ﷺ')
+# إعداد التسجيل
+logging.basicConfig(
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    level=logging.INFO
+)
+
+async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await update.message.reply_text('صلي على محمد ﷺ')
 
 def main():
-    token = os.environ.get('8067374289:AAHmgMpF2Mhe7Scc1c8-g5ywYYlNdNEWF_Q')
+    # الحصول على التوكن من متغيرات البيئة
+    token = os.getenv('8067374289:AAHmgMpF2Mhe7Scc1c8-g5ywYYlNdNEWF_Q')
     if not token:
-        print("Error: TELEGRAM_BOT_TOKEN not set!")
+        logging.error("لم يتم تعيين TELEGRAM_BOT_TOKEN!")
         return
-    
-    updater = Updater(token)
-    
-    dispatcher = updater.dispatcher
-    dispatcher.add_handler(CommandHandler("start", start))
-    
-    updater.start_polling()
-    updater.idle()
+
+    # إنشاء التطبيق وإضافة المعالج
+    application = Application.builder().token(token).build()
+    application.add_handler(CommandHandler("start", start))
+
+    # تشغيل البوت
+    application.run_polling()
 
 if __name__ == '__main__':
     main()
